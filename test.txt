@@ -1,0 +1,5 @@
+root:iotgoathardcodedpassword
+admin:admin
+admin:password
+root:root
+root:toor
