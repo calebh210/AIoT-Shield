@@ -4,10 +4,12 @@ import sys
 import psutil
 from discovery_module import find_alive 
 from enumeration_module import *
+from ai_module import set_api_key
 from colorama import init as colorama_init
 from colorama import Fore
 from colorama import Style
 from sql_module import *
+from simple_term_menu import TerminalMenu
 
 colorama_init()
 
@@ -26,6 +28,9 @@ signal.signal(signal.SIGINT, signal_handler) # Check if the users hits ctrl+C
 #Main menu page
 def mainMenu():
     helpMenu()
+    options = ["Discovery", "Enumeration", "Exploitation"]
+    terminal_menu = TerminalMenu(options)
+    menu_entry_index = terminal_menu.show()
     #Testing out NIC stuff
     #print("NIC info:")
     #print(psutil.net_if_addrs())
@@ -63,6 +68,8 @@ def mainMenu():
             scan_cves(arg)
         elif target == "all_scan":
             discover_os(arg)
+        elif target == "set_api_key":
+            set_api_key()
         elif target == "/!":
             os.system(arg)
         else:

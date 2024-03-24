@@ -12,6 +12,7 @@ def insert_to_table(table, value1, value2=None, value3=None):
     con.commit()
 
 
+
 def read_table(table, item="*"):
     res = cur.execute(f"SELECT {item} FROM {table}")
     return (res.fetchall())
