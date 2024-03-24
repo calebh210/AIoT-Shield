@@ -1,19 +1,31 @@
 import requests
 import json
+from sql_module import *
+from bruting_module import *
 
 
 def discover_webpage(target, port=80):
-    r = requests.get(f'http://{target}:{port}', verify=False, allow_redirects=True)
+    r = requests.get(f'http://{target}', verify=False, allow_redirects=True)
+    print(r)
+    if r != "<Response [404]": #If the page is not 404d
+        print("Alive")
+        update_table("hosts", "host", target, "isAlive", 1)
+        res = r.text
+        print(res)
+        #print(find_parameters(res))
+        
+    
 
-r = requests.get('https://192.168.56.110/cgi-bin/luci', verify=False, allow_redirects=True)
-print(r.text)
+# r = requests.get('https://192.168.56.110/cgi-bin/luci', verify=False, allow_redirects=True)
+# print(r.text)
 
-_data = 'luci_username=root&luci_password=iotgoathardcodedpassword'
-r = requests.post('https://192.168.56.110/cgi-bin/luci', data=_data, verify=False)
-print(r)
+# _data = 'luci_username=root&luci_password=iotgoathardcodedpassword'
+# r = requests.post('https://192.168.56.110/cgi-bin/luci', data=_data, verify=False)
+# print(r)
 #Get the service name
 #Query for default credentials
 #Test them
 
 #luci_username=duh&luci_password=duhs
 
+discover_webpage("192.168.56.110")
