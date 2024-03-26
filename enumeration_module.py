@@ -30,8 +30,7 @@ def scan_cves(target):
 
 
 def discover_os(target):
-    print(os.getuid())
-    if os.getuid() is not 0:
+    if os.getuid() != 0:
         print("Root privileges are required to run this scan!")
         return
     results=nmap.nmap_os_detection(target)
