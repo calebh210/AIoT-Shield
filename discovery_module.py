@@ -12,11 +12,17 @@ def find_alive(target):
     if "/" not in target:
         if (results[target]['state']['state']) == "up":  # This currently doesn't work with hostnames
             print(f"{target} is active")
-            insert_to_table("hosts", target)
+            add_to_table(target)
     else:
         all_potential_hosts = list(ipaddress.ip_network(target,False).hosts())
         for h in all_potential_hosts:
             if results[str(h)]['state']['state'] == "up":
                 print(f"{h} is active")
-                insert_to_table("hosts", str(h))
+                add_to_table(str(h))
 
+
+def add_to_table(entry):
+    if not check_if_exists("hosts", "host", entry):
+        insert_to_table("hosts", entry)
+    else:
+        print("Host already exists in the database!")
