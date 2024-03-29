@@ -1,4 +1,5 @@
 from openai import OpenAI
+from sql_module import read_table_by_key
 import os
 import json
 
@@ -28,7 +29,6 @@ def get_parameters(req):
 	print(result)
 	return result
 
-
 #function to parse the AI Output. It needs error handling incase the AI freaks out
 def parse_ai_output(resp):
 	parsed_output = []
@@ -38,3 +38,21 @@ def parse_ai_output(resp):
 		parsed_output.append(param)
 	return parsed_output
 
+#function to generate report based off of data in vulns table
+def generate_report(data):
+	set_api_key(True)
+	client = OpenAI()
+	response = client.chat.completions.create(
+	model="gpt-4-turbo-preview",
+	messages=[
+		{"role": "system", "content": "You are an assistant used to generate reports detailed the findings from Penetration Tests."},
+		{"role": "user", "content": f"This is a table which contains the found vulnerabilities from the test: {data}"},
+		#{"role": "user", "content": f"Respond in this format: VENDOR=[vendor],USERNAME=[username_paramter],PASSWORD=[password_parameter]"},
+		{"role": "user", "content": "Create a report using the given data. Detail the hostname, what the vulnerability is, how severe it is, and how it can be fixed. "}
+	]
+	)
+	print(response.choices[0].message.content)
+
+# BELOW IS TEST FUNCTIONS - REMOVE LATER
+# data = read_table_by_key("vulns","host","192.168.56.110")
+# generate_report(data)

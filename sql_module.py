@@ -40,6 +40,12 @@ def read_table(table, item="*"):
     res = cur.execute(f"SELECT {item} FROM {table}")
     return (res.fetchall())
 
+def read_table_by_key(table, key, keyValue, item="*"):
+    res = cur.execute(f"""SELECT {item} FROM {table} 
+    WHERE {key} = "{keyValue}"
+    """)
+    return (res.fetchall())
+
 def read_column(item, key, keyValue, table="hosts"):
     res = cur.execute(f"""
     SELECT {item} from "{table}"
@@ -71,6 +77,4 @@ def check_if_exists(table_name, key, keyValue):
         return True
     else:
         return False
-
-
 

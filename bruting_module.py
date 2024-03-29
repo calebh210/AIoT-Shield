@@ -2,7 +2,7 @@ import requests
 import json
 import csv
 from ai_module import *
-from sql_module import read_column
+from sql_module import read_column, insert_to_table
 
 def parse_textfile():
     file = open("test.txt")
@@ -58,17 +58,19 @@ def bruting_attack(target):
     if brute_req.status_code == 200:
         print("VALID LOGIN FOUND!!!")
         print(creds)
+        report_defaultcreds_vuln(target, url[0], creds)
+
     
-   
-    #need to work out how to tie all these together
+def report_defaultcreds_vuln(host, location, credentials):
+    _type = "Default Credentials"
+    severity = "Due to the low complexity, this is a high-severity vulnerability"
+    description = f"Default login was found to work on \"{location}\". The login was {credentials[0]}:{credentials[1]}"
+    remediation = "Change the default credentials to something more secure"
 
-# creds = parse_file() # This returns an ARRAY of ARRAYS!!
-# params = find_parameters()
-# for pair in creds:
-#     _data = craft_request(params, pair)
-#     resp = send_request("https://192.168.56.110/cgi-bin/luci", _data)
-#     print(resp)
-#     print(resp.request.body)
-#     print(resp.request.url)
+    vals = (None, host, _type, severity, description, remediation)
 
-#bruting_attack("192.168.56.110")
+    insert_to_table("vulns", vals)
+
+### CANNOT RUN THIS WITHOUT FIRST RUNNING A PORT SCAN TO DISCOVER URL
+### MAKE ERROR HANDLING IF BRUTE IS RUN FIRST + MAKE OPTION TO DO IT
+### ADD SSH COMPATABILITY AS WELL
