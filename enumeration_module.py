@@ -3,6 +3,7 @@ import nmap3
 import os
 import requests
 from sql_module import *
+from web_module import discover_webpage
 
 nmap = nmap3.Nmap()
 
@@ -17,6 +18,10 @@ def scan_ports(target):
     print(ports)
     
     update_table("hosts", "host", target, "open_ports", ports)
+
+    if 80 or 443 in ports:
+        print("Potential web ports exposed, would you like to check for a login portal?")
+        discover_webpage(target)
 
 def scan_cves(target):
     #https://services.nvd.nist.gov/rest/json/cves/2.0
@@ -40,4 +45,3 @@ def discover_os(target):
 def scan_all(target):
     scan_ports(target)
     dsicover_os(target)
-
