@@ -1,7 +1,18 @@
 import sqlite3
+
 con = sqlite3.connect("test.db")
 cur = con.cursor()
 
+def setup_table():
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS hosts(
+    host TEXT primary key,
+    open_ports text,
+    CVEs text, 
+    URL text, 
+    isAlive integer);
+    """)
+    con.commit()
 
 def insert_to_table(table, value1, value2=None, value3=None, value4=None, value5=None):
     cur.execute(f"""
@@ -11,11 +22,16 @@ def insert_to_table(table, value1, value2=None, value3=None, value4=None, value5
 
     con.commit()
 
-
-
 def read_table(table, item="*"):
     res = cur.execute(f"SELECT {item} FROM {table}")
     return (res.fetchall())
+
+def read_column(item, key, keyValue, table="hosts"):
+    res = cur.execute(f"""
+    SELECT {item} from "{table}"
+    WHERE {key} = "{keyValue}";
+    """)
+    return (res.fetchone())
 
 def clear_table(table):
     cur.execute(f"""

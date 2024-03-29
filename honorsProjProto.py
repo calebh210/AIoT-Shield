@@ -4,6 +4,7 @@ import sys
 import psutil
 from discovery_module import find_alive 
 from enumeration_module import *
+from bruting_module import bruting_attack
 from ai_module import set_api_key
 from colorama import init as colorama_init
 from colorama import Fore
@@ -127,9 +128,38 @@ class TargetMenu(DefaultState):
     def enter(self):
         print("Entering Target Menu")
         print(f"Attacking {self.target}")
+        self.target_menu()
 
     def exit(self):
         print("Exiting Target Menu")
+
+    def target_help_menu(self):
+        print("""
+        
+            COMMANDS - 
+
+            brute_force
+
+        """)
+    
+    def target_menu(self):
+        isBreak = False
+        while not isBreak:
+            inputs = super().init_shell()
+            target, arg = "", ""
+            split_inputs = inputs.split()
+            if len(split_inputs) == 1:
+                target = split_inputs[0]
+            elif len(split_inputs) == 2:
+                target, arg = split_inputs
+            if target == "":
+                print("Type \"help\" for a list of valid commands")
+            elif target == "exit":
+                isBreak = True
+            elif target == "help":
+                self.target_help_menu()
+            elif target == "brute_force":
+                bruting_attack(self.target)
 
 class Shell:
 
@@ -175,6 +205,8 @@ def helpMenu():
     cve_scan [ip] - not currently working
     all_scan - Requires root
     
+    In Target Mode:
+    brute_force
 
     show_hosts
     clear_table
@@ -209,6 +241,16 @@ def select_target(data):
     menu_entry_index = terminal_menu.show()
     return options[menu_entry_index]
 
-state_machine = StateMachine()
-main_menu_state = MenuState(state_machine)
-state_machine.change_state(main_menu_state)
+
+def main():
+    
+    setup_table() # Sets up the table if it doesnt already exists
+    state_machine = StateMachine() # Init state machine
+    main_menu_state = MenuState(state_machine) #Sets up main menu state
+    state_machine.change_state(main_menu_state) #Puts state machine into main menu state
+
+
+
+if __name__ == '__main__':
+    main()
+
