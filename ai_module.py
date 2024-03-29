@@ -2,11 +2,17 @@ from openai import OpenAI
 import os
 import json
 
-def set_api_key():
-	os.environ["OPENAI_API_KEY"] = input("Enter your OpenAI API key: \n")
+def set_api_key(file):
+	if file:
+		f = open("API_KEY")
+		os.environ["OPENAI_API_KEY"] = f.read()
+	else:
+		os.environ["OPENAI_API_KEY"] = input("Enter your OpenAI API key: \n")
 
 # https://platform.openai.com/docs/guides/text-generation
+# this returns in the format of vendor, username, password
 def get_parameters(req):
+	set_api_key(True)
 	client = OpenAI()
 	response = client.chat.completions.create(
 	model="gpt-3.5-turbo",
@@ -17,9 +23,10 @@ def get_parameters(req):
 		{"role": "user", "content": "Who is the vendor of this webpage? (Examples: Hewlett-Packard, Dell, etc.) What are the post parameters required to respond to this request in order to login?"}
 	]
 	)
-
+	print(response.choices[0].message.content)
 	result = parse_ai_output(response.choices[0].message.content)
 	print(result)
+	return result
 
 
 #function to parse the AI Output. It needs error handling incase the AI freaks out

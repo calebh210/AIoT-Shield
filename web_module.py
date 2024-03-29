@@ -5,13 +5,16 @@ from bruting_module import *
 
 
 def discover_webpage(target, port=80):
-    r = requests.get(f'http://{target}', verify=False, allow_redirects=True)
+    r = requests.get(f'http://{target}/cgi-bin/luci', verify=False, allow_redirects=True)
     print(r)
     if r != "<Response [404]": #If the page is not 404d
         print("Alive")
         update_table("hosts", "host", target, "isAlive", 1)
         res = r.text
-        print(res)
+        print(r.url)
+        print("Adding login URL to table...")
+        update_table("hosts", "host", target, "URL", r.url)
+        return (res)
         #print(find_parameters(res))
         
     
@@ -28,4 +31,3 @@ def discover_webpage(target, port=80):
 
 #luci_username=duh&luci_password=duhs
 
-discover_webpage("192.168.56.110")
