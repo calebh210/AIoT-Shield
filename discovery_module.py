@@ -27,7 +27,7 @@ def find_alive(target):
 
 def add_to_table(entry):
     if not check_if_exists("hosts", "host", entry):
-        vals = (entry, None, None, None, None)
+        vals = (entry, None, None, None, None, None)
         insert_to_table("hosts", vals)
     else:
         print("Host already exists in the database!")
