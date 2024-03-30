@@ -1,7 +1,7 @@
 import requests
 import json
 from sql_module import *
-from bruting_module import *
+
 
 
 def discover_webpage(target, port=80):

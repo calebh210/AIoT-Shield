@@ -9,6 +9,7 @@ def setup_table():
     CREATE TABLE IF NOT EXISTS hosts(
     host TEXT primary key,
     open_ports text,
+    OS text,
     CVEs text, 
     URL text, 
     isAlive integer);

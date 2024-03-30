@@ -20,7 +20,7 @@ def scan_ports(target):
     update_table("hosts", "host", target, "open_ports", ports)
 
     if 80 or 443 in ports:
-        print("Potential web ports exposed, would you like to check for a login portal?")
+        print("Potential web ports exposed, checking for login portal...")
         discover_webpage(target)
 
 def scan_cves(target):
@@ -39,9 +39,16 @@ def discover_os(target):
         print("Root privileges are required to run this scan!")
         return
     results=nmap.nmap_os_detection(target)
-    print(results)
+    try:
+        print(results[target]['osmatch'][0]['name'])
+        OS = results[target]['osmatch'][0]['name']
+        update_table("hosts", "host", target, "OS", results[target]['osmatch'][0]['name'])
+    except Exception as error:
+        print("ERROR: Are you sure that the host is alive?")
+        print(error)
     return
 
 def scan_all(target):
     scan_ports(target)
     dsicover_os(target)
+

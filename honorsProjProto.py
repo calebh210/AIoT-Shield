@@ -5,7 +5,7 @@ import psutil
 from discovery_module import find_alive 
 from enumeration_module import *
 from bruting_module import bruting_attack
-from ai_module import set_api_key
+from ai_module import set_api_key, generate_report
 from colorama import init as colorama_init
 from colorama import Fore
 from colorama import Style
@@ -113,7 +113,7 @@ class MenuState(DefaultState):
             elif target == "all_scan":
                 discover_os(arg)
             elif target == "set_api_key":
-                set_api_key() 
+                set_api_key(False) 
             elif target == "/!":
                 os.system(arg)
             else:
@@ -124,6 +124,7 @@ class TargetMenu(DefaultState):
     def __init__(self, target):
         self.target = target
         super().__init__()
+        super().update_shell(target)
 
     def enter(self):
         print("Entering Target Menu")
@@ -139,6 +140,8 @@ class TargetMenu(DefaultState):
             COMMANDS - 
 
             brute_force
+
+            generate_report
 
         """)
     
@@ -160,6 +163,18 @@ class TargetMenu(DefaultState):
                 self.target_help_menu()
             elif target == "brute_force":
                 bruting_attack(self.target)
+            elif target == "generate_report":
+                data = read_table_by_key("vulns","host",self.target)
+                data2 = read_table_by_key("hosts","host",self.target)
+                report = generate_report(data, data2)
+
+                if arg != "":
+                    f = open(arg, "w")
+                    f.write(report)
+                    f.close()
+                    print(f"Report saved to {arg}!")
+                else:
+                    print(report)
 
 class Shell:
 
