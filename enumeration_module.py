@@ -4,6 +4,7 @@ import os
 import requests
 from sql_module import *
 from web_module import discover_webpage
+from ftplib import FTP
 
 nmap = nmap3.Nmap()
 
@@ -22,7 +23,10 @@ def scan_ports(target):
     if 80 or 443 in ports:
         print("Potential web ports exposed, checking for login portal...")
         discover_webpage(target)
-
+    
+    if 21 in ports:
+        check_ftp(target)
+        
 def scan_cves(target):
     #https://services.nvd.nist.gov/rest/json/cves/2.0
     r = requests.get("https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=HP")
@@ -30,7 +34,6 @@ def scan_cves(target):
     for key in API_DATA['vulnerabilities']:
         print(key['cve']['id']) 
     #print(API_DATA['vulnerabilities'])
-
     return
 
 
@@ -51,4 +54,31 @@ def discover_os(target):
 def scan_all(target):
     scan_ports(target)
     dsicover_os(target)
+
+# Attempt anonymous FTP login
+def check_ftp(target):
+    try:
+        ftp = FTP(target)
+        ftp.login()
+        print("Successful login as anonymous!")
+        print("Printing FTP Contents...")
+        ftp.dir()
+        report_anonftplogin_vuln(target)
+
+    except:
+        print("ERROR: Could not login to FTP anonymously")
+
+
+def report_anonftplogin_vuln(host):
+    _type = "Anonymous Login"
+    severity = "Due to the low complexity, this is a high-severity vulnerability"
+    description = f"Anonymous login was found to work on FTP for \"{host}\"."
+    remediation = "Disable anonymous login"
+
+    vals = (None, host, _type, severity, description, remediation)
+
+    insert_to_table("vulns", vals)
+
+# check_ftp("127.0.0.1")
+# discover_os("192.168.56.110")
 
