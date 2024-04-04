@@ -55,6 +55,15 @@ def scan_all(target):
     scan_ports(target)
     dsicover_os(target)
 
+def discover_services(target):
+    try:
+        version_result = nmap.nmap_version_detection(target)
+    except Exception as error:
+        print("ERROR: Could not run service scan")
+    
+
+
+
 # Attempt anonymous FTP login
 def check_ftp(target):
     try:
