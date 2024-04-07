@@ -14,12 +14,13 @@ def find_alive(target):
             if (results[target]['state']['state']) == "up":  # This currently doesn't work with hostnames
                 print(f"{target} is active")
                 add_to_table(target)
-            else:
-                all_potential_hosts = list(ipaddress.ip_network(target,False).hosts())
-                for h in all_potential_hosts:
-                    if results[str(h)]['state']['state'] == "up":
-                        print(f"{h} is active")
-                        add_to_table(str(h))
+        else:
+            print("Scanning IP Range...")
+            all_potential_hosts = list(ipaddress.ip_network(target,False).hosts())
+            for h in all_potential_hosts:
+                if results[str(h)]['state']['state'] == "up":
+                    print(f"{h} is active")
+                    add_to_table(str(h))
     except:
         print("ERROR: Could not scan host. Hostname or IP may be invalid")
 

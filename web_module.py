@@ -1,17 +1,19 @@
 import requests
+from urllib3.exceptions import InsecureRequestWarning
 import json
 from sql_module import *
 
 
 
 def discover_webpage(target, port=80):
+    requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning) # disable the SSL warning
     r = requests.get(f'http://{target}/cgi-bin/luci', verify=False, allow_redirects=True)
-    print(r)
+    #print(r)
     if r != "<Response [404]": #If the page is not 404d
-        print("Alive")
+        #print("Alive")
         update_table("hosts", "host", target, "isAlive", 1)
         res = r.text
-        print(r.url)
+        print(f"Found: {r.url}")
         print("Adding login URL to table...")
         update_table("hosts", "host", target, "URL", r.url)
         return (res)

@@ -16,15 +16,16 @@ def scan_ports(target):
         if item['state'] == "open":
             ports.append(item['portid'])
     # ports = [item['portid'] for item in data ]
-    print(ports)
+    
+    print(f"Open ports found: {ports}")
     
     update_table("hosts", "host", target, "open_ports", ports)
 
-    if 80 or 443 in ports:
+    if "80" in ports or "443" in ports:
         print("Potential web ports exposed, checking for login portal...")
         discover_webpage(target)
     
-    if 21 in ports:
+    if "21" in ports:
         check_ftp(target)
         
 def scan_cves(target):
