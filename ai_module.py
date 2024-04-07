@@ -13,7 +13,7 @@ def set_api_key(file):
 def check_if_apikey_is_set():
 	key = os.environ.get("OPENAI_API_KEY")
 	if key == None:
-		set_api_key(False)
+		set_api_key(True)
 	else:
 		return
 
@@ -31,9 +31,9 @@ def get_parameters(req):
 		{"role": "user", "content": "Who is the vendor of this webpage? (Examples: Hewlett-Packard, Dell, etc.) What are the post parameters required to respond to this request in order to login?"}
 	]
 	)
-	print(response.choices[0].message.content)
+	#print(response.choices[0].message.content)
 	result = parse_ai_output(response.choices[0].message.content)
-	print(result)
+	#print(result)
 	return result
 
 #function to parse the AI Output. It needs error handling incase the AI freaks out
@@ -55,8 +55,8 @@ def generate_report(data, data2):
 		{"role": "system", "content": "You are an assistant used to generate reports detailed the findings from Vulnerability Scans."},
 		{"role": "user", "content": f"This is a table which contains the found vulnerabilities from the test: {data}"},
 		{"role": "user", "content": f"You can also use the table containing enumeration data from the test, if you wish: {data2}"},
-		#{"role": "user", "content": f"Respond in this format: VENDOR=[vendor],USERNAME=[username_paramter],PASSWORD=[password_parameter]"},
-		{"role": "user", "content": "Create a report using the given data. Detail the hostname, what the vulnerability is, how severe it is, and how it can be fixed. Include a small disclaimer at the bottom mentioning how this report was AI-generated"}
+		{"role": "user", "content": "Create a report using the given data. Detail the hostname, what the vulnerability is, \
+		how severe it is, and how it can be fixed. Include a small disclaimer at the bottom mentioning how this report was AI-generated"}
 	]
 	)
 	# print(response.choices[0].message.content)
