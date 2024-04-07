@@ -6,6 +6,7 @@ from discovery_module import find_alive
 from enumeration_module import *
 from bruting_module import bruting_attack
 from ai_module import set_api_key, generate_report
+from sniffing_module import *
 from colorama import init as colorama_init
 from colorama import Fore
 from colorama import Style
@@ -87,7 +88,7 @@ class MenuState(DefaultState):
                 helpMenu()
             elif target == "scan":
                 find_alive(arg)
-                
+                 
             elif target == "clear_table":
                 clear_table("hosts")
             elif target == "show_hosts":
@@ -139,9 +140,11 @@ class TargetMenu(DefaultState):
         
             COMMANDS - 
 
-            brute_force
+            sniff_network - Sniff the network of the current target for insecure communication
 
-            generate_report
+            brute_force - Attempts to login using default credentials
+
+            generate_report - Generates a report of all found vulnerabilities
 
         """)
     
@@ -167,7 +170,6 @@ class TargetMenu(DefaultState):
                 data = read_table_by_key("vulns","host",self.target)
                 data2 = read_table_by_key("hosts","host",self.target)
                 report = generate_report(data, data2)
-
                 if arg != "":
                     f = open(arg, "w")
                     f.write(report)
@@ -175,6 +177,9 @@ class TargetMenu(DefaultState):
                     print(f"Report saved to {arg}!")
                 else:
                     print(report)
+            elif target == "sniff_network":
+                sniff_packets(select_nic(), self.target)
+
 
 class Shell:
 

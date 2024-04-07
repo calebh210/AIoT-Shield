@@ -1,5 +1,8 @@
 from sql_module import *
+from time import sleep
 import signal
+import netifaces as nif
+from simple_term_menu import TerminalMenu
 
 
 # REFERENCES
@@ -48,23 +51,36 @@ def packet_handler(packet):
         #print(protocols)
 
 # Sniff packets
-def sniff_packets(nic):
+def sniff_packets(nic, host):
+    print("Sniffing packets for 30 seconds....")
     if os.getuid() != 0:
-        print("Root privileges are sniff packets!")
-        return
-    sniffing = True
-    while sniffing: 
-        sniff(iface = nic, filter="tcp", prn=packet_handler, store=0)
-        
+        print("ERROR: Root privileges are sniff packets!")
+        return 
+    sniffer = AsyncSniffer(iface = nic, filter="tcp", prn=packet_handler, store=0)
+    sniffer.start()
+    sleep(30) ### Make this a variable
+    sniffer.stop()
+    if len(protocols) != 0:
+        report_insecure_protocols(protocols, host)
 
-def report_insecure_protocols():
+def report_insecure_protocols(protocols, host):
+    # host = "NETWORK"
     _type = "Insecure Protocols and Communication"
     severity = "Due to the low complexity, this is a high-severity vulnerability"
-    description = f"Insecure protocols were found to be in use: {protocols}. These use of these protocols allows the potential for cleartext credentials to be sniffed."
+    description = f"Insecure protocols were found to be in use: {protocols}. These use of these protocols on the network allows the potential for cleartext credentials to be sniffed."
     remediation = "Use the secure, encrypted versions of these protocols"
 
     vals = (None, host, _type, severity, description, remediation)
 
     insert_to_table("vulns", vals)
 
-sniff_packets("lo")
+
+# Function to allow the user to select the NIC to sniff on
+def select_nic():
+    nics = nif.interfaces()
+    print("Select the Network Interface you'd like to sniff on \n")
+    terminal_menu = TerminalMenu(nics)
+    menu_entry_index = terminal_menu.show()
+    return nics[menu_entry_index]
+
+#sniff_packets("lo")
