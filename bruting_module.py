@@ -4,6 +4,9 @@ import csv
 from ai_module import *
 from sql_module import read_column, insert_to_table
 from web_module import discover_webpage
+from urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning) # disable the SSL warning
 
 def parse_textfile():
     file = open("test.txt")
@@ -66,18 +69,18 @@ def bruting_attack(target):
     if not check_url_exists(url, target):
         return
 
-    print(url[0])
+    print(f"Trying to login to {url[0]}")
     try:
         res = requests.get(url[0], verify=False, allow_redirects=True)
         params = get_parameters(res.text) # returns a touple of vendor, username, password
         creds = parse_csv(params[0])
-        print(creds)
+        #print(creds)
         data = craft_request([params[1], params[2]], [creds[0],creds[1]])
         #print(request)
         brute_req = send_request(url[0], data)
 
         if brute_req.status_code == 200:
-            print("VALID LOGIN FOUND!!!")
+            print("Valid Login Found:")
             print(creds)
             report_defaultcreds_vuln(target, url[0], creds)
     except Exception as error:
