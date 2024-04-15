@@ -5,7 +5,8 @@ import psutil
 from discovery_module import find_alive 
 from enumeration_module import *
 from bruting_module import bruting_attack
-from ai_module import set_api_key
+from ai_module import set_api_key, generate_report
+from sniffing_module import *
 from colorama import init as colorama_init
 from colorama import Fore
 from colorama import Style
@@ -87,7 +88,7 @@ class MenuState(DefaultState):
                 helpMenu()
             elif target == "scan":
                 find_alive(arg)
-                
+                 
             elif target == "clear_table":
                 clear_table("hosts")
             elif target == "show_hosts":
@@ -100,7 +101,7 @@ class MenuState(DefaultState):
                     print("No targets to select from!")
                 else:    
                     selected = select_target(alive_hosts)
-                    super().update_shell(selected)
+                    #super().update_shell(selected)
                     targ_menu = TargetMenu(selected)
                     self.state_machine.change_state(targ_menu)
 
@@ -113,7 +114,7 @@ class MenuState(DefaultState):
             elif target == "all_scan":
                 discover_os(arg)
             elif target == "set_api_key":
-                set_api_key() 
+                set_api_key(False) 
             elif target == "/!":
                 os.system(arg)
             else:
@@ -124,6 +125,7 @@ class TargetMenu(DefaultState):
     def __init__(self, target):
         self.target = target
         super().__init__()
+        super().update_shell(target)
 
     def enter(self):
         print("Entering Target Menu")
@@ -138,7 +140,11 @@ class TargetMenu(DefaultState):
         
             COMMANDS - 
 
-            brute_force
+            sniff_network - Sniff the network of the current target for insecure communication (30 second sniff)
+
+            brute_force - Attempts to login using default credentials
+
+            generate_report - Generates a report of all found vulnerabilities
 
         """)
     
@@ -155,11 +161,26 @@ class TargetMenu(DefaultState):
             if target == "":
                 print("Type \"help\" for a list of valid commands")
             elif target == "exit":
+                super().update_shell("")
                 isBreak = True
             elif target == "help":
                 self.target_help_menu()
             elif target == "brute_force":
                 bruting_attack(self.target)
+            elif target == "generate_report":
+                data = read_table_by_key("vulns","host",self.target)
+                data2 = read_table_by_key("hosts","host",self.target)
+                report = generate_report(data, data2)
+                if arg != "":
+                    f = open(arg, "w")
+                    f.write(report)
+                    f.close()
+                    print(f"Report saved to {arg}!")
+                else:
+                    print(report)
+            elif target == "sniff_network":
+                sniff_packets(select_nic(), self.target)
+
 
 class Shell:
 
@@ -179,22 +200,16 @@ def helpMenu():
     #Ascii art from https://patorjk.com/software/taag
     print(
     """ 
-                          ,----,                                                                          
-                        ,/   .`|                                                                          
-   ,---,              ,`   .'  :            ,---,.                             ___                        
-,`--.' |            ;    ;     /          ,'  .'  \                          ,--.'|_                      
-|   :  :   ,---.  .'___,/    ,'         ,---.' .' |         ,--,             |  | :,'             __  ,-. 
-:   |  '  '   ,'\ |    :     |          |   |  |: |       ,'_ /|   .--.--.   :  : ' :           ,' ,'/ /| 
-|   :  | /   /   |;    |.';  ;          :   :  :  /  .--. |  | :  /  /    '.;__,'  /     ,---.  '  | |' | 
-'   '  ;.   ; ,. :`----'  |  |          :   |    ; ,'_ /| :  . | |  :  /`./|  |   |     /     \ |  |   ,' 
-|   |  |'   | |: :    '   :  ;          |   :     \|  ' | |  . . |  :  ;_  :__,'| :    /    /  |'  :  /   
-'   :  ;'   | .; :    |   |  '          |   |   . ||  | ' |  | |  \  \    `. '  : |__ .    ' / ||  | '    
-|   |  '|   :    |    '   :  |          '   :  '; |:  | : ;  ; |   `----.   \|  | '.'|'   ;   /|;  : |    
-'   :  | \   \  /     ;   |.'           |   |  | ; '  :  `--'   \ /  /`--'  /;  :    ;'   |  / ||  , ;    
-;   |.'   `----'      '---'             |   :   /  :  ,      .-./'--'.     / |  ,   / |   :    | ---'     
-'---'                                   |   | ,'    `--`----'      `--'---'   ---`-'   \   \  /           
-                                        `----'                                          `----'        
-    
+           ______    _________   ________    _      _     _
+     /\   |_   _/ __ \__   __|  / ____| |   (_)    | |   | |         |`-._/\_.-`|
+    /  \    | || |  | | | |    | (___ | |__  _  ___| | __| |         |    ||    |                
+   / /\ \   | || |  | | | |     \___ \| '_ \| |/ _ \ |/ _` |         |___o()o___|
+  / ____ \ _| || |__| | | |     ____) | | | | |  __/ | (_| |         |__((<>))__|
+ /_/    \_\_____\____/  |_|    |_____/|_| |_|_|\___|_|\__,_|         \   o\/o   /
+                                                                      \   ||   /
+                                                                       \  ||  /
+                                                                        '.||.'
+                                                                                                                                
     """)
 
     print("""
