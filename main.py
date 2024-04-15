@@ -101,7 +101,7 @@ class MenuState(DefaultState):
                     print("No targets to select from!")
                 else:    
                     selected = select_target(alive_hosts)
-                    super().update_shell(selected)
+                    #super().update_shell(selected)
                     targ_menu = TargetMenu(selected)
                     self.state_machine.change_state(targ_menu)
 
@@ -140,7 +140,7 @@ class TargetMenu(DefaultState):
         
             COMMANDS - 
 
-            sniff_network - Sniff the network of the current target for insecure communication
+            sniff_network - Sniff the network of the current target for insecure communication (30 second sniff)
 
             brute_force - Attempts to login using default credentials
 
@@ -161,6 +161,7 @@ class TargetMenu(DefaultState):
             if target == "":
                 print("Type \"help\" for a list of valid commands")
             elif target == "exit":
+                super().update_shell("")
                 isBreak = True
             elif target == "help":
                 self.target_help_menu()
@@ -199,6 +200,7 @@ def helpMenu():
     #Ascii art from https://patorjk.com/software/taag
     print(
     """ 
+           ______    _________   ________    _      _     _
      /\   |_   _/ __ \__   __|  / ____| |   (_)    | |   | |         |`-._/\_.-`|
     /  \    | || |  | | | |    | (___ | |__  _  ___| | __| |         |    ||    |                
    / /\ \   | || |  | | | |     \___ \| '_ \| |/ _ \ |/ _` |         |___o()o___|
