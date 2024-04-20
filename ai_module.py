@@ -3,17 +3,26 @@ from sql_module import read_table_by_key
 import os
 import json
 
-def set_api_key(file):
-	if file:
+def set_api_key():
+	if os.path.exists("./API_KEY"):
 		f = open("API_KEY")
 		os.environ["OPENAI_API_KEY"] = f.read()
+		f.close()
 	else:
 		os.environ["OPENAI_API_KEY"] = input("Enter your OpenAI API key: \n")
+		print("Would you like to save your API key to a local file? This will remove the need to enter the key every time.(y/n)\n")
+		choice = input()
+		if choice == "y":
+			f = open("API_KEY", "w")
+			f.write(os.environ["OPENAI_API_KEY"])
+			f.close()
+		else:
+			pass	
 
 def check_if_apikey_is_set():
 	key = os.environ.get("OPENAI_API_KEY")
 	if key == None:
-		set_api_key(True)
+		set_api_key()
 	else:
 		return
 
