@@ -59,7 +59,7 @@ def generate_report(data, data2):
 	check_if_apikey_is_set()
 	client = OpenAI()
 	response = client.chat.completions.create(
-	model="gpt-4-turbo-preview",
+	model="gpt-4-turbo",
 	messages=[
 		{"role": "system", "content": "You are an assistant used to generate reports detailing the findings from Vulnerability Scans."},
 		{"role": "user", "content": f"This is a table which contains the found vulnerabilities from the test: {data}"},
@@ -178,5 +178,3 @@ def store_cve_db(client):
 # data = read_table_by_key("vulns","host","192.168.56.110")
 # generate_report(data)
 #cve_lookup_experimental()
-
-cve_lookup("")

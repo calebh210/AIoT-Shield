@@ -53,5 +53,3 @@ def check_self_sign(response):
 #Test them
 
 #luci_username=duh&luci_password=duhs
-
-discover_webpage("192.168.56.110")
