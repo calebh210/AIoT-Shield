@@ -25,8 +25,8 @@ def get_parameters(req):
 	response = client.chat.completions.create(
 	model="gpt-3.5-turbo",
 	messages=[
-		{"role": "system", "content": "You are a helpful assistant."},
-		{"role": "user", "content": f"This is a request from a webpage I am trying to log in to: {req}"},
+		{"role": "system", "content": "You are a helpful assistant used to gather data from an HTTP response"},
+		{"role": "user", "content": f"This is a response from a webpage I am trying to log in to: {req}"},
 		{"role": "user", "content": f"Respond in this format: VENDOR=[vendor],USERNAME=[username_paramter],PASSWORD=[password_parameter]"},
 		{"role": "user", "content": "Who is the vendor of this webpage? (Examples: Hewlett-Packard, Dell, etc.) What are the post parameters required to respond to this request in order to login?"}
 	]
@@ -52,7 +52,7 @@ def generate_report(data, data2):
 	response = client.chat.completions.create(
 	model="gpt-4-turbo-preview",
 	messages=[
-		{"role": "system", "content": "You are an assistant used to generate reports detailed the findings from Vulnerability Scans."},
+		{"role": "system", "content": "You are an assistant used to generate reports detailing the findings from Vulnerability Scans."},
 		{"role": "user", "content": f"This is a table which contains the found vulnerabilities from the test: {data}"},
 		{"role": "user", "content": f"You can also use the table containing enumeration data from the test, if you wish: {data2}"},
 		{"role": "user", "content": "Create a report using the given data. Detail the hostname, what the vulnerability is, \
@@ -62,8 +62,26 @@ def generate_report(data, data2):
 	# print(response.choices[0].message.content)
 	return response.choices[0].message.content
 
+
+def cve_lookup(service_version):
+	check_if_apikey_is_set()
+	client = OpenAI()
+	response = client.chat.completions.create(
+	model="gpt-4-turbo",
+	messages=[
+		{"role": "system", "content": "You are an assistant used to find the CVE ID associated with vulnerabilities in software. You take in software and their version, and return relevant CVEs"},
+		{"role": "user", "content": f"Return ONLY the CVE ID. Return multiple if there are multiple. Return all that you find. If no CVE ID exists, simply return the string 'None Found'"},
+		{"role": "user", "content": f"Here is the software version: {service_version}"}
+	]
+	)
+	# print(response.choices[0].message.content)
+	print(response.choices[0].message.content)
+
+
+
 #https://platform.openai.com/docs/assistants/overview?context=with-streaming
-def cve_lookup():
+### THE BELOW FUNCTION IS EXPERIMENTAL AND UNFINISHED!
+def cve_lookup_experimental():
 
 	check_if_apikey_is_set()
 
@@ -150,5 +168,6 @@ def store_cve_db(client):
 # BELOW IS TEST FUNCTIONS - REMOVE LATER
 # data = read_table_by_key("vulns","host","192.168.56.110")
 # generate_report(data)
+#cve_lookup_experimental()
 
-cve_lookup()
+cve_lookup("")

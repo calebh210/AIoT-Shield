@@ -30,7 +30,7 @@ def scan_ports(target):
         
 def scan_cves(target):
     #https://services.nvd.nist.gov/rest/json/cves/2.0
-    r = requests.get("https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=HP")
+    r = requests.get("https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=")
     API_DATA = r.json()
     for key in API_DATA['vulnerabilities']:
         print(key['cve']['id']) 
@@ -59,6 +59,7 @@ def scan_all(target):
 def discover_services(target):
     try:
         version_result = nmap.nmap_version_detection(target)
+        print(version_result)
     except Exception as error:
         print("ERROR: Could not run service scan")
     
