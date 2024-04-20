@@ -4,7 +4,7 @@ import sys
 import psutil
 from discovery_module import find_alive 
 from enumeration_module import *
-from bruting_module import bruting_attack
+from login_module import bruting_attack
 from ai_module import set_api_key, generate_report
 from sniffing_module import *
 from colorama import init as colorama_init
