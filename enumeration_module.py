@@ -29,12 +29,13 @@ def scan_ports(target):
         check_ftp(target)
         
 def scan_cves(target):
-    #https://services.nvd.nist.gov/rest/json/cves/2.0
-    r = requests.get("https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=")
-    API_DATA = r.json()
-    for key in API_DATA['vulnerabilities']:
-        print(key['cve']['id']) 
-    #print(API_DATA['vulnerabilities'])
+    services = discover_services(target)
+    for service in services:
+        #https://services.nvd.nist.gov/rest/json/cves/2.0
+        r = requests.get(f"https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch={service}")
+        API_DATA = r.json()
+        for key in API_DATA['vulnerabilities']:
+            print(key['cve']['id']) 
     return
 
 
@@ -55,13 +56,18 @@ def discover_os(target):
 def scan_all(target):
     scan_ports(target)
     dsicover_os(target)
+    discover_services(target)
 
 def discover_services(target):
+    services = []
     try:
         version_result = nmap.nmap_version_detection(target)
-        print(version_result)
+        for ports in version_result[target]['ports']:
+            services.append(ports['service']['product'])
+        return services
     except Exception as error:
         print("ERROR: Could not run service scan")
+        print(error)
     
 
 
