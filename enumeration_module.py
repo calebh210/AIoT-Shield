@@ -1,4 +1,4 @@
-#!venv/bin/python3
+#!.venv/bin/python3
 import nmap3
 import os
 import requests
