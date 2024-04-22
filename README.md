@@ -7,8 +7,15 @@ Installation:
 ```
   git clone https://github.com/calebh210/AIoT-Shield.git
   cd AIoT-Shield
-  source venv/bin/activate
+  python3 -m venv .venv
+  source .venv/bin/activate
   pip3 -r requirements.txt
+```
+
+Alternatively, use the installation script
+
+```
+./install.sh
 ```
 
 ## Usage
