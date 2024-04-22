@@ -12,6 +12,8 @@ from colorama import Fore
 from colorama import Style
 from sql_module import *
 from simple_term_menu import TerminalMenu
+from tabulate import tabulate
+
 
 colorama_init()
 
@@ -235,18 +237,9 @@ def helpMenu():
 
 #Disply hosts which were discovered to be alive
 def display_table(data):
-    print(
-f"""┌────────────┐
-│    Host    │      
-└────────────┘""")
-
-    for item in data:
-        print(
-f"""
-┌────────────┐
-│ {item[0]} │           {item[1]}       {item[2]}
-└────────────┘
-""")
+    print(data)
+    headers = ['IP Address', 'Open Ports', 'OS', 'CVEs', 'URL', '']  # Adjust headers as needed
+    print(tabulate(data, headers=headers, tablefmt='fancy_grid'))
 
 def select_target(data):
     options = []
