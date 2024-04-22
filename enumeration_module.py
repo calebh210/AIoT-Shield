@@ -33,17 +33,13 @@ def scan_ports(target):
         check_ftp(target)
         
 def scan_cves(target):
-<<<<<<< HEAD
     cve_list = []
-=======
->>>>>>> main
     services = discover_services(target)
     for service in services:
         #https://services.nvd.nist.gov/rest/json/cves/2.0
         r = requests.get(f"https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch={service}")
         API_DATA = r.json()
         for key in API_DATA['vulnerabilities']:
-<<<<<<< HEAD
             cve_list.append(key['cve']['id']) 
 
         f = open(f"{target}-cves.txt","w")
@@ -52,9 +48,6 @@ def scan_cves(target):
 
         update_table("hosts", "host", target, "CVEs", f"CVEs saved to {target}-cves.txt")
 
-=======
-            print(key['cve']['id']) 
->>>>>>> main
     return
 
 
