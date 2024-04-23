@@ -12,6 +12,7 @@ def setup_table():
     OS text,
     CVEs text, 
     URL text, 
+    SERVICES text,
     isAlive integer);
     """)
     con.commit()
@@ -60,7 +61,7 @@ def clear_table(table):
     """)
     con.commit()
 
-def update_table(table_name, key, keyValue, column1=None, value1=None, column2=None, value2=None, column3=None, value3=None):
+def update_table(table_name, key, keyValue, column1=None, value1=None):
     cur.execute(f"""
     UPDATE {table_name}
     SET {column1} = "{value1}"

@@ -245,8 +245,8 @@ def helpMenu():
 
 #Disply hosts which were discovered to be alive
 def display_table(data):
-    print(data)
-    headers = ['IP Address', 'Open Ports', 'OS', 'CVEs', 'URL', '']  # Adjust headers as needed
+    #print(data)
+    headers = ['IP Address', 'Open Ports', 'OS', 'CVEs', 'URL', 'Services']  # Adjust headers as needed
     print(tabulate(data, headers=headers, tablefmt='fancy_grid'))
 
 def select_target(data):
