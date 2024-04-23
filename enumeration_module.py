@@ -2,6 +2,7 @@
 import nmap3
 import os
 import requests
+from ai_module import cve_lookup
 from sql_module import *
 from web_module import discover_webpage
 from ftplib import FTP
@@ -52,9 +53,24 @@ def scan_cves(target):
         f.write(str(cve_list))
         f.close()
 
+        try:
+            update_table("hosts", "host", target, "CVEs", f"CVEs saved to {target}-cves.txt") # put the location of the txt in the database
+        except:
+            pass
+
         print(f"CVEs saved to {target}-cves.txt")
 
-        update_table("hosts", "host", target, "CVEs", f"CVEs saved to {target}-cves.txt")
+        print("Would you like to also do an AI based CVE detection? (y/n)") ## optional module incase the NIST API isnt working
+        resp = input()
+        if resp == "y":
+            ai_cves = cve_lookup(services)
+            print(ai_cves)
+            f = open(f"{target}-cves.txt","w")
+            f.write(str(ai_cves))
+            f.close()
+            print(f"AI CVEs saved to {target}-cves.txt")
+        else:
+            pass
 
         return
 
@@ -89,10 +105,13 @@ def discover_services(target):
                 services.append(ports['service']['product'])
             else:
                 services.append(ports['service']['name'])
+                
+        try:
+            update_table("hosts","host",target,"SERVICES",services)
+        except:
+            pass
 
-        update_table("hosts","host",target,"SERVICES",services)
-
-        return services
+        return services 
     except Exception as error:
         print("ERROR: Could not run service scan")
         print(error)
@@ -123,6 +142,8 @@ def report_anonftplogin_vuln(host):
     vals = (None, host, _type, severity, description, remediation)
 
     insert_to_table("vulns", vals)
+
+
 
 # check_ftp("127.0.0.1")
 # discover_os("192.168.56.110")
