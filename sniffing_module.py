@@ -21,7 +21,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler) # Check if the users hits ctrl+C
 
 def packet_handler(packet):
-      if packet.haslayer(TCP) and packet.haslayer(Raw):
+    if packet.haslayer(TCP) and packet.haslayer(Raw):
         raw_data = packet[Raw].load.decode(errors='ignore')
 
         ### Detect HTTP traffic
@@ -34,20 +34,38 @@ def packet_handler(packet):
         # https://www.ietf.org/rfc/rfc1939.txt
         # They use the same commands in the header
         if "USER" in raw_data or "PASS" in raw_data or "SYST" in raw_data or "LIST" in raw_data:
-            print("Potential POP3 or FTP Traffic:", raw_data)
-            print("Analyze the port to determine location:",  packet[TCP].dport)
-            protocols.add("FTP or POP3")
+            if packet[TCP].dport == 21:
+                print("FTP Traffic Detected:", raw_data)
+                protocols.add("FTP")
+            elif packet[TCP].dport == 110:
+                print("POP3 Traffic Detected", raw_data)
+                protocols.add("POP3")
+            else:
+                print("Potential POP3 or FTP Traffic:", raw_data)
+                print("Analyze the port to determine exact service:",  packet[TCP].dport)
+                protocols.add("FTP or POP3")
 
+            # CREDENTIALS ARE NOT SAVED FOR DATA SECURITY REASONS
             # if "USER" in raw_data or "PASS" in raw_data:
             #     potential_credentials.append(raw_data)
-        ### Detect TELNET Traffic
-        # https://datatracker.ietf.org/doc/html/rfc854
+        
+        ## Detect TELNET Traffic
+        #https://datatracker.ietf.org/doc/html/rfc854
         elif '\r\n' in raw_data:
             print("Potential Telnet Traffic:", raw_data)
             protocols.add("Telnet")
         ### Detect DNS Traffic
         # This is tricky since DNS is UDP
 
+    elif packet.haslayer(UDP) and packet.haslayer(DNS):
+        dns_query = packet[DNS].qd.qname.decode()
+        if packet[DNS].an is not None: # Verify that an answer was received before trying to decode it
+            dns_response = packet[DNS].an.rdata.decode()
+        else:
+            dns_response = None
+        print(f"DNS Query: {dns_query}")
+        print(f"DNS Response: {dns_response}")
+        protocols.add("DNS")
         #print(protocols)
 
 # Sniff packets
@@ -56,7 +74,7 @@ def sniff_packets(nic, host):
     if os.getuid() != 0:
         print("ERROR: Root privileges are sniff packets!")
         return 
-    sniffer = AsyncSniffer(iface = nic, filter="tcp", prn=packet_handler, store=0)
+    sniffer = AsyncSniffer(iface = nic, filter="(tcp or udp)", prn=packet_handler, store=0)
     sniffer.start()
     sleep(30) ### Make this a variable
     sniffer.stop()
@@ -81,6 +99,7 @@ def select_nic():
     print("Select the Network Interface you'd like to sniff on \n")
     terminal_menu = TerminalMenu(nics)
     menu_entry_index = terminal_menu.show()
+    print(f"Selected: {nics[menu_entry_index]}")
     return nics[menu_entry_index]
 
 #sniff_packets("lo")
