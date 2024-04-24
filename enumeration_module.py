@@ -65,7 +65,7 @@ def scan_cves(target):
         if resp == "y":
             ai_cves = cve_lookup(services)
             print(ai_cves)
-            f = open(f"{target}-cves.txt","w")
+            f = open(f"{target}-cves.txt","a")
             f.write(str(ai_cves))
             f.close()
             print(f"AI CVEs saved to {target}-cves.txt")
