@@ -64,6 +64,7 @@ def generate_report(data, data2):
 		{"role": "system", "content": "You are an assistant used to generate reports detailing the findings from Vulnerability Scans."},
 		{"role": "user", "content": f"This is a table which contains the found vulnerabilities from the test: {data}"},
 		{"role": "user", "content": f"You can also use the table containing enumeration data from the test, if you wish: {data2}"},
+		{"role": "user", "content": f"Mention how a list of CVEs the target is potentially vulneralbe to is saved in TARGET-IP-cve.txt"},
 		{"role": "user", "content": "Create a report using the given data. Detail the hostname, what the vulnerability is, \
 		how severe it is, and how it can be fixed. Include a small disclaimer at the bottom mentioning how this report was AI-generated"}
 	]
@@ -79,12 +80,12 @@ def cve_lookup(service_version):
 	model="gpt-4-turbo",
 	messages=[
 		{"role": "system", "content": "You are an assistant used to find the CVE ID associated with vulnerabilities in software. You take in software and their version, and return relevant CVEs"},
-		{"role": "user", "content": f"Return ONLY the CVE ID. Return multiple if there are multiple. Return all that you find. If no CVE ID exists, simply return the string 'None Found'"},
+		{"role": "user", "content": f"Return ONLY the CVE ID. Return multiple if there are multiple, seperate them with a , . Return all that you find. If no CVE ID exists, simply return the string 'None Found'"},
 		{"role": "user", "content": f"Here is the software version: {service_version}"}
 	]
 	)
 	# print(response.choices[0].message.content)
-	print(response.choices[0].message.content)
+	return(response.choices[0].message.content)
 
 
 
