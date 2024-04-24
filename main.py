@@ -93,7 +93,7 @@ class MenuState(DefaultState):
                  
             elif target == "clear_table":
                 clear_table("hosts")
-            elif target == "show_hosts":
+            elif target == "show_table":
                 alive_hosts = read_table("hosts")
                 display_table(alive_hosts)
                 #print(alive_hosts)
@@ -147,6 +147,8 @@ class TargetMenu(DefaultState):
             brute_force - Attempts to login using default credentials
 
             generate_report - Generates a report of all found vulnerabilities
+
+            exit - Returns to main menu
 
         """)
     
@@ -222,12 +224,18 @@ def helpMenu():
     cve_scan [ip] - not currently working
     all_scan - Requires root
     
-    In Target Mode:
-    brute_force
 
-    show_hosts
-    clear_table
+    Enter Target Mode:
     select_target
+
+    Commands In Target Mode:
+    brute_force
+    sniff_network
+    generate_report
+
+    show_table
+    clear_table
+
     /! [arg] - Run Shell Commands
 
     # Info - Load information on the current module
@@ -237,8 +245,8 @@ def helpMenu():
 
 #Disply hosts which were discovered to be alive
 def display_table(data):
-    print(data)
-    headers = ['IP Address', 'Open Ports', 'OS', 'CVEs', 'URL', '']  # Adjust headers as needed
+    #print(data)
+    headers = ['IP Address', 'Open Ports', 'OS', 'CVEs', 'URL', 'Services']  # Adjust headers as needed
     print(tabulate(data, headers=headers, tablefmt='fancy_grid'))
 
 def select_target(data):

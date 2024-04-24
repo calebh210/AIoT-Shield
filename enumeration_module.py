@@ -2,6 +2,7 @@
 import nmap3
 import os
 import requests
+from ai_module import cve_lookup
 from sql_module import *
 from web_module import discover_webpage
 from ftplib import FTP
@@ -35,20 +36,43 @@ def scan_ports(target):
 def scan_cves(target):
     cve_list = []
     services = discover_services(target)
-    for service in services:
-        #https://services.nvd.nist.gov/rest/json/cves/2.0
-        r = requests.get(f"https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch={service}")
-        API_DATA = r.json()
-        for key in API_DATA['vulnerabilities']:
-            cve_list.append(key['cve']['id']) 
+    if services is not []:
+        #print(services)
+        for service in services:
+            #https://services.nvd.nist.gov/rest/json/cves/2.0
+            r = requests.get(f"https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch={service}")
 
+            # This try catch block prevents crashes in case of a null response
+            try:
+                API_DATA = r.json()
+                for key in API_DATA['vulnerabilities']:
+                    cve_list.append(key['cve']['id']) 
+            except:
+                pass
         f = open(f"{target}-cves.txt","w")
         f.write(str(cve_list))
         f.close()
 
-        update_table("hosts", "host", target, "CVEs", f"CVEs saved to {target}-cves.txt")
+        try:
+            update_table("hosts", "host", target, "CVEs", f"CVEs saved to {target}-cves.txt") # put the location of the txt in the database
+        except:
+            pass
 
-    return
+        print(f"CVEs saved to {target}-cves.txt")
+
+        print("Would you like to also do an AI based CVE detection? (y/n)") ## optional module incase the NIST API isnt working
+        resp = input()
+        if resp == "y":
+            ai_cves = cve_lookup(services)
+            print(ai_cves)
+            f = open(f"{target}-cves.txt","w")
+            f.write(str(ai_cves))
+            f.close()
+            print(f"AI CVEs saved to {target}-cves.txt")
+        else:
+            pass
+
+        return
 
 
 def discover_os(target):
@@ -75,8 +99,19 @@ def discover_services(target):
     try:
         version_result = nmap.nmap_version_detection(target)
         for ports in version_result[target]['ports']:
-            services.append(ports['service']['product'])
-        return services
+            
+            #print((ports['service']['product']))
+            if 'product' in ports['service']:
+                services.append(ports['service']['product'])
+            else:
+                services.append(ports['service']['name'])
+                
+        try:
+            update_table("hosts","host",target,"SERVICES",services)
+        except:
+            pass
+
+        return services 
     except Exception as error:
         print("ERROR: Could not run service scan")
         print(error)
@@ -107,6 +142,8 @@ def report_anonftplogin_vuln(host):
     vals = (None, host, _type, severity, description, remediation)
 
     insert_to_table("vulns", vals)
+
+
 
 # check_ftp("127.0.0.1")
 # discover_os("192.168.56.110")
