@@ -64,3 +64,28 @@ List of commands to run:
     /! [arg] - Run Shell Commands
 ```
 
+## Evaluation Results
+
+These tables show AIoT Shield compared to Nessus and OpenVAS at detectiong vulnerabilities in vulnerable machines.
+
+# Test Case One - IoT Goat
+
+| x                         | AIoT Shield | Nessus | OpenVAS |
+|---------------------------|-------------|--------|---------|
+| Unencrypted Telnet        | X           | X      |         |
+| Default Credentials       | X           |        |         |
+| Untrusted/Self-Signed SSL | X           | X      | X       |
+
+# Test Case Two - Kioptrix
+
+| x                  | AIoT Shield | Nessus | OpenVAS |
+|--------------------|-------------|--------|---------|
+| Vulnerable OpenSSL | X           | X      | X       |
+| Vulnerable OpenSSH | X           | X      | X       |
+| Vulnerable Samba   | X           | X      |         |
+
+# Test Case Three - Blue
+
+| x        | AIoT Shield | Nessus | OpenVAS |
+|----------|-------------|--------|---------|
+| MS17-010 |             | X      | X       |
