@@ -14,6 +14,8 @@
 ```
 AIoT Shield is a vulnerability scanner intended to enumerate IoT devices for potential vulnerabilities. AIoT Shield makes use of the GPT-4 LLM to perform security checks.
 
+Read the paper [here](https://drive.google.com/file/d/1PlyEZ9SfX_WVIDjsRhv5dfv5Mblx_nlZ/view?usp=sharing)
+
 ## Requirements:
 - Python3
 - pip3
